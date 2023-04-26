@@ -1,8 +1,9 @@
-export const onChangeText = (setState) => (e) => {
+export const onChangeText = (setState, setValid) => (e) => {
+   
     setState(e.target.value)
 }
 
-export const onChangeFile = (setState) => (e) => {
+export const onChangeFile = (setState, setValid) => (e) => {
     if (e.target.files) {
         setState(e.target.files[0])
     }
