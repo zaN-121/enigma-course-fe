@@ -1,9 +1,9 @@
 import React from 'react'
 import FormInput from "../../components/FormInput";
-import useAddCourse from "./useAddCourse";
+import useEditCourse from "./useEditCourse";
 import {Button, Form} from "react-bootstrap";
-import {set, useForm} from 'react-hook-form';
-import {useNavigate} from "react-router-dom";
+import {get, set, useForm} from 'react-hook-form';
+import {useLocation, useNavigate} from "react-router-dom";
 
 const FORM_LIST = [
     {id: "title", label: "Title", type: "text", placeholder: "Enter course title", validate:  ["title", {required: true}]},
@@ -15,19 +15,36 @@ const FORM_LIST = [
 
 ]
 
-const AddCourse = ({ data, setData}) => {
-    const {getter, setter, isValid} = useAddCourse()
+const EditCourse = ({ data, setData}) => {
+    const {getter, setter, isValid} = useEditCourse()
     const {register, handleSubmit, watch, formState: {error}} = useForm();
     const navigate = useNavigate()
+    const location = useLocation();
+    const onSubmit = (d, navigate, key)  => {
+        let arr = [...data];
+        console.log(arr)
 
-    const onSubmit = (d, navigate)  => {
-        setData([...data, d]);
+        for (let i =0; i< arr.length; i++) {
+            if (i == key ) {
+                console.log(i)
+                console.log(key)
+                arr[i].title = getter.title
+                arr[i].typeId = getter.typeId
+                arr[i].description = getter.description
+                arr[i].courseFile = getter.courseFile
+                arr[i].level = getter.level
+                arr[i].duration = getter.duration
+            }
+        }
+        
+        console.log(arr)
+        setData(arr);
         navigate('/course-list')
     }
 
     return (
         <>
-            <h1>Add Course Page</h1>
+            <h1>Edit Course Page</h1>
             <Form  id="form1">
                 {FORM_LIST.map((form) => (
                     <FormInput
@@ -39,11 +56,11 @@ const AddCourse = ({ data, setData}) => {
                     />
                 ))}
                 
-                <Button variant="success" disabled={!isValid} onClick={() => onSubmit(getter, navigate)}>Submit</Button>
+                <Button variant="success" disabled={!isValid} onClick={() => onSubmit(getter, navigate, location.state.key)}>Submit</Button>
                 <Button variant="secondary" onClick={() => navigate("/course-list")}>Cancel</Button>
             </Form>
         </>
     )
 }
 
-export default AddCourse;
+export default EditCourse;

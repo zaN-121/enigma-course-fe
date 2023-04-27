@@ -2,6 +2,7 @@ import { Button, Container } from "react-bootstrap"
 import EmptyList from "../../components/EmptyList/EmptyList"
 import CourseItem from "./components/CourseItem/CourseItem"
 import { StyledListGroup } from "./CourseList.styled"
+import {useNavigate} from "react-router-dom";
 
 const ListItem = ({data}) => {
     return (
@@ -13,7 +14,7 @@ const ListItem = ({data}) => {
                         description={course.description}
                         level={course.level}
                         duration={course.duration}
-                        key={index}
+                        id={index}
                     />
                 )
             })}
@@ -21,12 +22,14 @@ const ListItem = ({data}) => {
     )
 }
 
-const CourseList = ({courses, onNavigate}) => {
+const CourseList = ({courses, setIsLogedIn}) => {
+    const navigate = useNavigate()
     return (
         <Container>
             <h1>Course List Page</h1>
-            <Button variant="success" onClick={() => onNavigate("add-course")}>Add Course</Button>
+            <Button variant="success" onClick={() => navigate("/add-course/")}>Add Course</Button>
             {courses.length > 0 ? <ListItem data={courses} /> : <EmptyList text="Data masih kosong" />}
+            <Button variant={"danger"} onClick={() => {setIsLogedIn(false); navigate('/login')}}>Lougout</Button>
         </Container>
     )
 }
