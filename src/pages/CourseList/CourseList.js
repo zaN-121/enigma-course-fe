@@ -3,8 +3,12 @@ import EmptyList from "../../components/EmptyList/EmptyList"
 import CourseItem from "./components/CourseItem/CourseItem"
 import { StyledListGroup } from "./CourseList.styled"
 import {useNavigate} from "react-router-dom";
+import useQuery from "../../hooks/useQuery";
+import {getCourses} from "../../service/courseService";
+import {deleteToken} from "../../utils/token";
 
-const ListItem = ({data}) => {
+const ListItem = ({data, setReload}) => {
+
     return (
         <StyledListGroup>
             {data.map((course, index) => {
@@ -12,9 +16,11 @@ const ListItem = ({data}) => {
                     <CourseItem
                         title={course.title}
                         description={course.description}
-                        level={course.level}
-                        duration={course.duration}
-                        id={index}
+                        level={course.courseInfo.level}
+                        duration={course.courseInfo.duration}
+                        id={course.courseId}
+                        setReaload ={setReload}
+                        fileLink={course.link}
                     />
                 )
             })}
@@ -22,14 +28,16 @@ const ListItem = ({data}) => {
     )
 }
 
-const CourseList = ({courses, setIsLogedIn}) => {
+const CourseList = ({setIsLogedIn}) => {
+    const {data: courses, loading, error, setReload} = useQuery(getCourses, {})
+    console.log(courses.data)
     const navigate = useNavigate()
     return (
         <Container>
             <h1>Course List Page</h1>
-            <Button variant="success" onClick={() => navigate("/add-course/")}>Add Course</Button>
-            {courses.length > 0 ? <ListItem data={courses} /> : <EmptyList text="Data masih kosong" />}
-            <Button variant={"danger"} onClick={() => {setIsLogedIn(false); navigate('/login')}}>Lougout</Button>
+            <Button variant="success" onClick={() => navigate("/add-course")}>Add Course</Button>
+            {courses.length > 0 ? <ListItem data={courses} setReload={setReload}/> : <EmptyList text="Data masih kosong" />}
+            <Button variant={"danger"} onClick={() => {deleteToken(); navigate('/login')}}>Lougout</Button>
         </Container>
     )
 }

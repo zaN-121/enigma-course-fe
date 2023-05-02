@@ -4,24 +4,30 @@ import useAddCourse from "./useAddCourse";
 import {Button, Form} from "react-bootstrap";
 import {set, useForm} from 'react-hook-form';
 import {useNavigate} from "react-router-dom";
+import useMutation from "../../hooks/useMutation";
+import {addCourse} from "../../service/courseService";
 
 const FORM_LIST = [
     {id: "title", label: "Title", type: "text", placeholder: "Enter course title", validate:  ["title", {required: true}]},
     {id: 'description', label: "Description", type: "textarea", placeholder: "Enter course description" , validate: ["descriptioin", {required: true}]},
-    {id: "typeId", label: "Type Id", type: "text", placeholder: "Enter course type id", validate:  ["typeId", {required: true}] },
-    {id: "courseFile", label: "Course Material", type: "file", placeholder: "Choose course material" , validate:  ["courseFile", {required: true}]},
+    {id: "courseTypeId", label: "Type Id", type: "text", placeholder: "Enter course type id", validate:  ["typeId", {required: true}] },
+    {id: "file", label: "Course Material", type: "file", placeholder: "Choose course material" , validate:  ["courseFile", {required: true}]},
     {id: "level", label: "Level", type: "text", placeholder: "Enter course level", validate:  ["level", {required: true}]},
     {id: "duration", label: "Duration", type: "text", placeholder: "Enter course duration" , validate: ["duration", {required: true}]},
 
 ]
 
-const AddCourse = ({ data, setData}) => {
+const AddCourse = () => {
     const {getter, setter, isValid} = useAddCourse()
+    const {onMutation, reload, data: courses} = useMutation(addCourse, {
+        onError : () => {},
+        onSuccess : () => {}
+    })
     const {register, handleSubmit, watch, formState: {error}} = useForm();
     const navigate = useNavigate()
 
-    const onSubmit = (d, navigate)  => {
-        setData([...data, d]);
+    const onSubmit = ()  => {
+        onMutation(getter)
         navigate('/course-list')
     }
 
@@ -39,7 +45,7 @@ const AddCourse = ({ data, setData}) => {
                     />
                 ))}
                 
-                <Button variant="success" disabled={!isValid} onClick={() => onSubmit(getter, navigate)}>Submit</Button>
+                <Button variant="success" disabled={!isValid} onClick={() => onSubmit()}>Submit</Button>
                 <Button variant="secondary" onClick={() => navigate("/course-list")}>Cancel</Button>
             </Form>
         </>

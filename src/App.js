@@ -7,14 +7,15 @@ import {Route, Routes, Outlet, Navigate} from "react-router-dom";
 import Login from "./pages/Login/Login";
 import {set} from "react-hook-form";
 import EditCourse from "./pages/EditCourse/EditCourse";
+import {getToken} from "./utils/token";
 
 const DATA = [
   {title : "Title 1", description: "Description"},
   {title: "Title 2", description: "Description"},
 ]
 
-const ProtectedRoute = ({isLogedIn}) => {
-    if (!isLogedIn) {
+const ProtectedRoute = () => {
+    if (!getToken()) {
         return <Navigate to={'/login'} replace={true} />
     }
 

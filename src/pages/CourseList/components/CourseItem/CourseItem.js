@@ -1,7 +1,20 @@
 import { Button,  ButtonGroup, Col } from "react-bootstrap";
 import {useNavigate} from "react-router-dom";
+import useDelete from "../../../../hooks/useDelete";
+import {deleteCourse, downloadCourseFile} from "../../../../service/courseService";
 
-const CourseItem = ({title, description, level, duration, id}) => {
+const CourseItem = ({title, description, level, duration, id, setReaload, fileLink}) => {
+    const {onDelete, loading} = useDelete(deleteCourse, {
+        onError: (e) => console.log(e),
+        onSuccess: () => setReaload(true),
+    })
+
+    const onDownload = () => {
+        const path = fileLink?.split("/")
+        const filename = path[path.length-1]
+
+        downloadCourseFile(filename)
+    }
     const navigate = useNavigate()
     return (
         <>
@@ -12,9 +25,9 @@ const CourseItem = ({title, description, level, duration, id}) => {
                 <p>Duration: {duration}</p>
             </Col>
             <ButtonGroup>
-                <Button variant="primary" onClick={() => navigate(`/edit-course`, {state: {key: id}})}>Edit</Button>
-                <Button variant="danger">Delete</Button>
-                <Button variant="secondary">Download</Button>
+                <Button variant="primary" onClick={() => navigate(`/edit-course`, {state: {id}})}>Edit</Button>
+                <Button variant="danger" disabled={loading} onClick={() => onDelete(id)}>Delete</Button>
+                <Button variant="secondary" onClick={onDownload}>Download</Button>
             </ButtonGroup>
         </>
     )

@@ -4,6 +4,9 @@ import useEditCourse from "./useEditCourse";
 import {Button, Form} from "react-bootstrap";
 import {get, set, useForm} from 'react-hook-form';
 import {useLocation, useNavigate} from "react-router-dom";
+import useMutation from "../../hooks/useMutation";
+import {editCourse} from "../../service/courseService";
+import useEdit from "../../hooks/useEdit";
 
 const FORM_LIST = [
     {id: "title", label: "Title", type: "text", placeholder: "Enter course title", validate:  ["title", {required: true}]},
@@ -15,30 +18,33 @@ const FORM_LIST = [
 
 ]
 
-const EditCourse = ({ data, setData}) => {
+const EditCourse = () => {
     const {getter, setter, isValid} = useEditCourse()
+    const {onEdit, loading} = useEdit(editCourse, {
+        onError: () => {},
+        onSuccess: () => {}
+    })
     const {register, handleSubmit, watch, formState: {error}} = useForm();
     const navigate = useNavigate()
     const location = useLocation();
-    const onSubmit = (d, navigate, key)  => {
-        let arr = [...data];
-        console.log(arr)
-
-        for (let i =0; i< arr.length; i++) {
-            if (i == key ) {
-                console.log(i)
-                console.log(key)
-                arr[i].title = getter.title
-                arr[i].typeId = getter.typeId
-                arr[i].description = getter.description
-                arr[i].courseFile = getter.courseFile
-                arr[i].level = getter.level
-                arr[i].duration = getter.duration
-            }
-        }
-        
-        console.log(arr)
-        setData(arr);
+    const onSubmit = (d, navigate, id)  => {
+        // let arr = [...data];
+        // console.log(arr)
+        //
+        // for (let i =0; i< arr.length; i++) {
+        //     if (i == key ) {
+        //         console.log(i)
+        //         console.log(key)
+        //         arr[i].title = getter.title
+        //         arr[i].typeId = getter.typeId
+        //         arr[i].description = getter.description
+        //         arr[i].courseFile = getter.courseFile
+        //         arr[i].level = getter.level
+        //         arr[i].duration = getter.duration
+        //     }
+        // }
+        console.log(id)
+        onEdit(d, id);
         navigate('/course-list')
     }
 
@@ -56,7 +62,7 @@ const EditCourse = ({ data, setData}) => {
                     />
                 ))}
                 
-                <Button variant="success" disabled={!isValid} onClick={() => onSubmit(getter, navigate, location.state.key)}>Submit</Button>
+                <Button variant="success" disabled={!isValid} onClick={() => onSubmit(getter, navigate, location.state.id)}>Submit</Button>
                 <Button variant="secondary" onClick={() => navigate("/course-list")}>Cancel</Button>
             </Form>
         </>
